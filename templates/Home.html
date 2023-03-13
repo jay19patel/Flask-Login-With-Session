@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section>
+
+    <div>
+        <h1 class="text-center"> Im Home page </h1>
+    </div>
+
+
+<hr><hr>
+
+    {% if name %}
+    <h1>Name : {{name}}</h1>
+    <h1>City : {{city}}</h1>
+    <h1>Email : {{email}}</h1>
+    {% else %}
+    <h1>YOU ARE NOT LOGIN BRO </h1>
+    {% endif %}
+   
+<hr>
+    <div class="text-center">
+        <a href="/test"><button type="button" class="btn btn-success">Test</button></a>
+    </div>
+<hr><hr>
+
+</section>
+{% endblock %}
