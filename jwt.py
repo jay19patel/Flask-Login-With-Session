@@ -3,11 +3,13 @@
 
 
 
+
+
 from flask import Flask,render_template,request,session,redirect,url_for,flash
 from pymongo import MongoClient # mongodb 
-from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity,jwt_required,JWTManager,set_access_cookies
+from flask_jwt_extended import create_access_token,get_jwt_identity,jwt_required,JWTManager,set_access_cookies
 from datetime import timedelta
-import redis
+import requests
 
 app = Flask(__name__)
 
@@ -21,8 +23,6 @@ jwt = JWTManager(app)
 client = MongoClient('localhost', 27017) # connection 
 db = client.Website # create table
 regapi = db.Userdata # triger
-
-
 
 @app.route('/login',methods=['GET','POST'])
 def LoginPage():
@@ -48,7 +48,9 @@ def LoginPage():
                     )
                 # access_token = create_access_token(identity='Sallubhai')
                 res = redirect(url_for('HomePage'))
-                set_access_cookies(res, access_token)      
+                set_access_cookies(res, access_token) 
+                session['login_user'] = userdata['name']
+                print("Loged in......")     
                 return res
                
 
@@ -66,9 +68,11 @@ def LoginPage():
 @app.route('/logout',methods=['GET','POST'])
 @jwt_required()
 def Logout():
-    print("you are log out")
+    session.clear()
+    session['login_user']=''
+    print("loged out...")
     flash("You are logout Login New ID ")
-    return redirect(url_for('LoginPage'))
+    return redirect(url_for('HomePage'))
 
 
 
@@ -90,6 +94,7 @@ def RegistrationPage():
                 "password":newpwd
             })
             flash('You were successfully Register Your Data')
+            print("Registration Success......")  
             return redirect(url_for('LoginPage'))
 
 
@@ -101,25 +106,32 @@ def RegistrationPage():
 
 
 @app.route("/" ,methods=["GET"])
-@jwt_required()
 def HomePage():
-    if set_access_cookies:
-        print(" Log In successfulyy in Home Page ")
-        data = get_jwt_identity()
-        name = data['name']
-        email = data['email']
-        city = data['city']
-        return render_template('Home.html',name=name,email=email,city=city)
-    else:
-        print("user not login in Home page  ")
-        return redirect(url_for('LoginPage'))
+        name = session['login_user']
+        print(name)
+        return render_template('Home.html',name=name)
+        
+
+
 
    
 
 @app.route('/test')
 @jwt_required()
 def TestPage():
-    return render_template('Test.html')
+    if session['login_user']:
+        print("Loged in Test......")  
+        data = get_jwt_identity()
+        name = data['name']
+        email = data['email']
+        city = data['city']
+        print(session['login_user'])
+        return render_template('Test.html',name=name,email=email,city=city)
+    else:
+        print(" Not Loged in......") 
+        flash("You are not Log in, Login and then use TEST Page ")
+        return redirect(url_for('LoginPage'))
+    
 
 
 
