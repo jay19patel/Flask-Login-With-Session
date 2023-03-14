@@ -1,9 +1,4 @@
 
-# --------------------------- jwt authentication-----------------------------
-
-
-
-
 
 from flask import Flask,render_template,request,session,redirect,url_for,flash
 from pymongo import MongoClient # mongodb 
@@ -105,7 +100,6 @@ def RegistrationPage():
     return render_template('RegistrPage.html')
 
 
-
 @app.route("/" ,methods=["GET"])
 def HomePage():
     session['login_user']= {'login':False}
@@ -115,6 +109,7 @@ def HomePage():
         return render_template('Home.html',name=name)
     else:
         return render_template('Home.html')
+
    
 
 @app.route('/test')
