@@ -105,15 +105,16 @@ def RegistrationPage():
     return render_template('RegistrPage.html')
 
 
+
 @app.route("/" ,methods=["GET"])
 def HomePage():
+    session['login_user']= {'login':False}
+    if 'name' in session['login_user']:
         name = session['login_user']
         print(name)
         return render_template('Home.html',name=name)
-        
-
-
-
+    else:
+        return render_template('Home.html')
    
 
 @app.route('/test')
