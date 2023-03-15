@@ -28,6 +28,7 @@ def LoginPage():
             newpwd = pwd[::-1]+pwd[::-1]+pwd
             if userdata['password'] == newpwd:
                 print("login done ....")
+                session['log'] = "LOGIN"
                 session['login_user']={"name":userdata['name'],"email":userdata['email'],"city":userdata['city']}
                 return redirect(url_for('HomePage'))
 
@@ -45,7 +46,7 @@ def LoginPage():
 @app.route('/logout',methods=['GET','POST'])
 def Logiout():
     session.clear()
-    session['login_user']=''
+    session['log']='LOGOUT'
     print("you are log out")
     flash('You were successfully LOG OUT')
     return redirect(url_for('HomePage'))
@@ -82,15 +83,15 @@ def RegistrationPage():
 
 @app.route('/')
 def HomePage():
-    session['login_user']=''
-    if session['login_user']:
-        print(" Log In successfulyy")
-        name= session['login_user']['name']
-        email= session['login_user']['email']
-        city= session['login_user']['city']
-        flash(f' hello {name} you are login My Website Welcome')
-        return render_template('Home.html',name=name,email=email,city=city)
-
+    if session.get('log'):
+        if session['log'] == "LOGIN":
+            print(" Log In successfulyy")
+            name= session['login_user']['name']
+            email= session['login_user']['email']
+            city= session['login_user']['city']
+            flash(f' hello {name} you are login My Website Welcome')
+            return render_template('Home.html',name=name,email=email,city=city)
+        return render_template('Home.html')
     else:
         print("not login  In Broo.")
         return render_template('Home.html')
